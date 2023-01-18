@@ -7,10 +7,10 @@ console.log('hello is this working?');
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
-const { request, response } = require('express');
+// const { request, response } = require('express');
 
 
-// ****
+// **** DON'T FORGET TO REQUIRE YOUR START JSON FILE ****
 let data = require('./data/weather.json');
 
 
@@ -33,13 +33,13 @@ const PORT = process.env.PORT || 3002;
 //*** 2nd arg - callback which will execute when someone hits that point ***
 // **** Callback function - 2 parameters: request, response (req,res) ***
 
-app.get('/', (request, response)=>{
+app.get('/', (request, response) => {
   response.status(200).send('I am watching you');
 });
 
 
 
-app.get('/hello', (request, response)=> {
+app.get('/hello', (request, response) => {
   console.log(request.query);
 
   let firstName = request.query.firstName;
@@ -49,12 +49,16 @@ app.get('/hello', (request, response)=> {
 });
 
 
-app.get('/weather', (request, response, next)=> {
+app.get('/weather', (request, response, next) => {
   try {
-    let weatherD = request.query.weatherD;
+    let searchQuery = request.query.city_name;
+    let lat = request.query.lat;
+    let lon = request.query.lon;
 
-    let dataToWeather = data.find(weather => weatherD.lat === lat);
-    let dataToSend = new Weather(dataToWeather);
+
+
+    let dataToGroom = data.find(city => city.city_name === searchQuery);
+    let dataToSend = new Forecast(dataToGroom, lat, lon);
 
     response.status(200).send(dataToSend);
 
@@ -67,10 +71,10 @@ app.get('/weather', (request, response, next)=> {
 
 //****** CLASS TO GROOM BULKY DATA ****
 
-class Weather {
-  constructor(weatherObj){
-    this.lat = weatherObj.lat
-    this.lon =weatherObj.lon
+class Forecast {
+  constructor(weatherObj) {
+    this.datetime = weatherObj.datetime;
+    this.description = weatherObj.description;
   }
 }
 
@@ -84,10 +88,10 @@ app.get('*', (request, response) => {
 
 
 // **** ERROR HANDLING - PLUG AND PLAY CODE FROM EXPRESS DOCS *****
-app.use((error, request, response, next)=>{
+app.use((error, request, response, next) => {
   response.status(500).send(error.message);
 });
 
 
 //***** SERVER START ******
-app.listen(PORT, ()=>console.log(`We are running on port: ${PORT}`));
+app.listen(PORT, () => console.log(`We are running on port: ${PORT}`));
