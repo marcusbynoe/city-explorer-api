@@ -51,16 +51,17 @@ app.get('/hello', (request, response) => {
 
 app.get('/weather', (request, response, next) => {
   try {
-    let searchQuery = request.query.city_name;
+    let cityName = request.query.searchQuery;
     let lat = request.query.lat;
     let lon = request.query.lon;
 
 
 
-    let dataToGroom = data.find(city => city.city_name === searchQuery);
-    let dataToSend = new Forecast(dataToGroom, lat, lon);
+    let city = data.find(city => city.city_name.toLowerCase() === cityName.toLowerCase());
 
-    response.status(200).send(dataToSend);
+    let weatherData = city.data.map(weatherObj => new Forecast(weatherObj));
+
+    response.status(200).send(weatherData);
 
 
   } catch (error) {
@@ -73,8 +74,8 @@ app.get('/weather', (request, response, next) => {
 
 class Forecast {
   constructor(weatherObj) {
-    this.datetime = weatherObj.datetime;
-    this.description = weatherObj.description;
+    this.date = weatherObj.valid_date;
+    this.description = weatherObj.weather.description;
   }
 }
 
