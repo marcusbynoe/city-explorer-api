@@ -8,10 +8,11 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 // const { request, response } = require('express');
-
+const axios = require('axios');
+const { request, response } = require('express');
 
 // **** DON'T FORGET TO REQUIRE YOUR START JSON FILE ****
-let data = require('./data/weather.json');
+// let data = require('./data/weather.json');
 
 
 // ******* Once express is in we need to use it - per express docs
@@ -49,17 +50,20 @@ app.get('/hello', (request, response) => {
 });
 
 
-app.get('/weather', (request, response, next) => {
+app.get('/weather', async (request, response, next) => {
   try {
-    let cityName = request.query.searchQuery;
+    // let searchQuery = request.query.searchQuery;
     let lat = request.query.lat;
     let lon = request.query.lon;
 
+    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=4&units=I`;
 
+    let weatherResults = await axios.get(url);
 
-    let city = data.find(city => city.city_name.toLowerCase() === cityName.toLowerCase());
+    let weatherArr = weatherResults.data.data;
+    // let city = data.find(city => city.city_name.toLowerCase() === cityName.toLowerCase());
 
-    let weatherData = city.data.map(weatherObj => new Forecast(weatherObj));
+    let weatherData = weatherArr.map(weatherObj => new Forecast(weatherObj));
 
     response.status(200).send(weatherData);
 
@@ -69,6 +73,18 @@ app.get('/weather', (request, response, next) => {
   }
 
 });
+
+app.get('/movies', async (request, response, next)=> {
+
+
+
+  
+});
+
+
+
+
+
 
 //****** CLASS TO GROOM BULKY DATA ****
 
