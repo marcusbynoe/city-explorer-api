@@ -9,6 +9,7 @@ require('dotenv').config();
 const cors = require('cors');
 // const { request, response } = require('express');
 const axios = require('axios');
+const { request, response } = require('express');
 
 // **** DON'T FORGET TO REQUIRE YOUR START JSON FILE ****
 // let data = require('./data/weather.json');
@@ -55,14 +56,14 @@ app.get('/weather', async (request, response, next) => {
     let lat = request.query.lat;
     let lon = request.query.lon;
 
-    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.REACT_APP_WEATHER}&lat=${lat}&lon=${lon}&days=4&units=I`;
+    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=4&units=I`;
 
     let weatherResults = await axios.get(url);
 
-    let weatherArr = weatherResults.data;
+    let weatherArr = weatherResults.data.data;
     // let city = data.find(city => city.city_name.toLowerCase() === cityName.toLowerCase());
 
-    let weatherData = weatherArr.data.map(weatherObj => new Forecast(weatherObj));
+    let weatherData = weatherArr.map(weatherObj => new Forecast(weatherObj));
 
     response.status(200).send(weatherData);
 
@@ -72,6 +73,18 @@ app.get('/weather', async (request, response, next) => {
   }
 
 });
+
+app.get('/movies', async (request, response, next)=> {
+
+
+
+  
+});
+
+
+
+
+
 
 //****** CLASS TO GROOM BULKY DATA ****
 
