@@ -1,6 +1,6 @@
 'use strict';
 
-const axios = ('axios');
+const axios = require('axios');
 
 async function getMovies(request, response, next) {
   try {
@@ -17,16 +17,17 @@ async function getMovies(request, response, next) {
 
   } catch (error) {
     next(error);
+
   }
 
-  class Movie {
-    constructor(movieObj) {
-      this.title = movieObj.title;
-      this.description = movieObj.overview;
-      this.image = 'https://image.tmdb.org/t/p/w500' + movieObj.poster_path;
-    }
-  }
 }
 
+class Movie {
+  constructor(movieObj) {
+    this.title = movieObj.title;
+    this.description = movieObj.overview;
+    this.image = 'https://image.tmdb.org/t/p/w500' + movieObj.poster_path;
+  }
+}
 
 module.exports = getMovies;

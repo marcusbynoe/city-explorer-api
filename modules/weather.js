@@ -24,13 +24,16 @@ async function getWeather(request, response, next) {
     next(error);
   }
 
-  class Forecast {
-    constructor(weatherObj) {
-      this.date = weatherObj.valid_date;
-      this.description = weatherObj.weather.description;
-    }
-  }
 
 }
+
+
+class Forecast {
+  constructor(weatherObj) {
+    this.date = weatherObj.valid_date;
+    this.description = weatherObj.weather.description;
+  }
+}
+
 
 module.exports = getWeather;
