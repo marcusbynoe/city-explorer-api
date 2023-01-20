@@ -7,9 +7,10 @@ console.log('hello is this working?');
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
-// const { request, response } = require('express');
 const axios = require('axios');
-const { request, response } = require('express');
+// const { response } = require('express');
+// const { request, response } = require('express');
+
 
 // **** DON'T FORGET TO REQUIRE YOUR START JSON FILE ****
 // let data = require('./data/weather.json');
@@ -40,14 +41,14 @@ app.get('/', (request, response) => {
 
 
 
-app.get('/hello', (request, response) => {
-  console.log(request.query);
+// app.get('/hello', (request, response) => {
+//   console.log(request.query);
 
-  let firstName = request.query.firstName;
-  let lastName = request.query.lastName;
+//   let firstName = request.query.firstName;
+//   let lastName = request.query.lastName;
 
-  response.status(200).send(`Hello ${firstName} ${lastName}! Welcome to my server`);
-});
+//   response.status(200).send(`Hello ${firstName} ${lastName}! Welcome to my server`);
+// });
 
 
 app.get('/weather', async (request, response, next) => {
@@ -74,11 +75,25 @@ app.get('/weather', async (request, response, next) => {
 
 });
 
-app.get('/movies', async (request, response, next)=> {
+app.get('/movies', async (request, response, next) => {
+  try {
+    let searchQuery = request.query.searchQuery;
+    let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${searchQuery}&language=en-US&page=1&include_adult=false`;
+
+    let moviesFromAxios = await axios.get(url);
+
+    let moviesArr = moviesFromAxios.data.results;
+    let newMovieArr = moviesArr.map(movie => new Movie(movie));
+
+
+    response.status(200).send(newMovieArr);
+
+  } catch (error) {
+    next(error);
+  }
 
 
 
-  
 });
 
 
@@ -95,7 +110,13 @@ class Forecast {
   }
 }
 
-
+class Movie {
+  constructor(movieObj) {
+    this.title = movieObj.title;
+    this.description = movieObj.overview;
+    this.image = 'https://image.tmdb.org/t/p/w500'+ movieObj.poster_path;
+  }
+}
 
 // ***** CATCH ALL ENDPOINT - NEEDS TO BE YOUR LAST DEFINED ENDPOINT ****
 app.get('*', (request, response) => {
